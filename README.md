@@ -21,3 +21,5 @@ The model will be downloaded to your current working directory. After downloadin
 Also, check out the requirements.txt file in the YOLOv5 directory—it lists all the necessary packages that need to be installed. In the main code, I have added comments to guide you through training the model step by step.
 
 #### Note: Before running the model in Colab, make sure to switch to the T4 GPU by changing the runtime settings. The comments in the code will provide further instructions on how to execute the training In that way it will be easy for executing code.
+![image](https://github.com/user-attachments/assets/e99c450d-7469-4c1f-b6db-259531c8b169)
+
