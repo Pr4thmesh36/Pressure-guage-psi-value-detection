@@ -1,15 +1,22 @@
-#first we need to mount the 
+# First we need to mount the drive where we have stored our data
 from google.colab import drive
 drive.mount('/content/drive')
 
+# After mounting the drive we need to change our directory to yolov5 where we will be training our model
 %cd drive/My Drive/yolov5
 
+# These are the requirements that we need to download before training our model after downloading the requirements please begin from the beginning by mounting the directory.
 !pip install -r requirements.txt
 
+# Now we are ready to train our model. you can change the img, batch, and epochs values according to your requirements. As soon as you reach the perfect precision value you can stop the training and automatically your best weights will be recorded.
 !python train.py --img 800 --batch 10 --epochs 30 --data "/content/drive/My Drive/colabfolder/data.yaml" --weights yolov5s.pt --name pressure_gauge_model
 
+# After training has been completed you can see the summary of the model and how well your model performed on training and val data.
+# Now you have the trained model we can test it on unseen data if it is detecting the objects in images you can test both images as well as video according your need to provide the *.extension(jpg/mp4)
+# After running this below code you can see your results at this location(runs/detect/exp55/labels) in the drive. The below code will store the image and the coordinates where the object is detected in the images.
 !python detect.py --weights /content/drive/MyDrive/yolov5/runs/train/pressure_gauge_model/weights/best.pt --img 640 --conf 0.50 --source "/content/drive/My Drive/testingphoto/frame_000339.jpg" --save-txt --save-conf
 
+# This is the code for the regression model which will be used for finding the approx value of psi using the angle you can directly run the below code to train the simple regression model.
 import os
 import cv2
 import math
@@ -67,6 +74,8 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+
+# This below code will be used to find the angle made by the pressure gauge needle. and you need to set the path for the object detected image and label in the code you can see the example. 
 import os
 import cv2
 import math
@@ -139,6 +148,8 @@ if center and needle_tip:
     angle = calculate_angle(center, needle_tip)
     print(f"Angle: {angle} degrees")
 
+
+# After running the below code it will be asking the angle that we have obtained from the above code we need to provide this angle and we will get the psi value.
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
