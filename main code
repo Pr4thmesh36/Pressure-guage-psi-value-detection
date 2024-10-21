@@ -1,0 +1,163 @@
+#first we need to mount the 
+from google.colab import drive
+drive.mount('/content/drive')
+
+%cd drive/My Drive/yolov5
+
+!pip install -r requirements.txt
+
+!python train.py --img 800 --batch 10 --epochs 30 --data "/content/drive/My Drive/colabfolder/data.yaml" --weights yolov5s.pt --name pressure_gauge_model
+
+!python detect.py --weights /content/drive/MyDrive/yolov5/runs/train/pressure_gauge_model/weights/best.pt --img 640 --conf 0.50 --source "/content/drive/My Drive/testingphoto/frame_000339.jpg" --save-txt --save-conf
+
+import os
+import cv2
+import math
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import openpyxl
+
+import pandas as pd
+
+data = {
+    'degree': [ 45, 90, 135, 180, 225, 270, 315],
+    'psi': [0, 16.75, 33, 50, 66, 83, 100]
+}
+
+df = pd.DataFrame(data)
+
+print("DataFrame from mapped degree to PSI values:")
+print(df)
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+print("DataFrame from XML data:")
+
+print(df.head())
+print(df.info())
+
+X = df['degree'].values.reshape(-1, 1)
+y = df['psi'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=7)
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print(f"Mean Squared Error: {mse:.2f}")
+print(f"R-squared: {r2:.2f}")
+
+plt.figure(figsize=(10, 6))
+plt.scatter(X_test, y_test, color='black', label='Actual')
+plt.plot(X_test, y_pred, color='blue', linewidth=3, label='Predicted')
+plt.xlabel('Degree')
+plt.ylabel('PSI')
+plt.title('Regression Model: Degree vs. PSI')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+import os
+import cv2
+import math
+import numpy as np
+
+def read_yolo_labels(labels_file):
+    boxes = []
+    with open(labels_file, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            values = line.strip().split()
+            if len(values) >= 6:
+                class_id = int(values[0])
+                x_center = float(values[1])
+                y_center = float(values[2])
+                width = float(values[3])
+                height = float(values[4])
+                confidence = float(values[5])
+                boxes.append((class_id, x_center, y_center, width, height, confidence))
+            else:
+                print(f"Invalid line format: {line}")
+    return boxes
+
+def calculate_angle(center, tip):
+    if center and tip:
+        dx = tip[0] - center[0]
+        dy = tip[1] - center[1]
+        angle_radians = math.atan2(dy, dx)
+        angle_degrees = math.degrees(angle_radians)
+        angle_degrees = (angle_degrees + 360) % 360
+
+        adjusted_angle = (angle_degrees - 90) % 360
+        return adjusted_angle
+    else:
+        return None
+
+
+def get_center_and_needle_tip(boxes, image_width, image_height):
+    center = None
+    needle_tip = None
+    max_confidence = -1
+
+    for box in boxes:
+        if box[5] > max_confidence:
+            if box[0] == 0:
+                center = (int(box[1] * image_width), int(box[2] * image_height))
+            elif box[0] == 1:
+                needle_tip = (int(box[1] * image_width), int(box[2] * image_height))
+            max_confidence = box[5]
+
+    return center, needle_tip
+
+
+
+
+image_path = r'/content/drive/MyDrive/yolov5/runs/detect/exp55/frame_000339.jpg'
+labels_file = r'/content/drive/MyDrive/yolov5/runs/detect/exp55/labels/frame_000339.txt'
+
+image = cv2.imread(image_path)
+if image is not None:
+    image_height, image_width, _ = image.shape
+else:
+    print(f"Error: Unable to read image at {image_path}")
+    exit()
+
+boxes = read_yolo_labels(labels_file)
+
+center, needle_tip = get_center_and_needle_tip(boxes, image_width, image_height)
+if center and needle_tip:
+    angle = calculate_angle(center, needle_tip)
+    print(f"Angle: {angle} degrees")
+
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+X = df['degree'].values.reshape(-1, 1)
+y = df['psi'].values
+
+
+model = LinearRegression()
+
+model.fit(X, y)
+
+def predict_psi_from_angle(angle):
+    angle = (angle % 360 + 360) % 360
+    return model.predict([[angle]])[0]
+
+# Example usage:
+angle_input = float(input("Enter the angle in degrees: "))
+predicted_psi = predict_psi_from_angle(angle_input)
+print(f"Predicted PSI for {angle_input} degrees: {predicted_psi:.2f} psi")
+
+
+
