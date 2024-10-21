@@ -1,3 +1,4 @@
+# data set google drive link (https://drive.google.com/drive/folders/1GLFnby4-jpCBB69yiaDMQfJlMTDgmS2D?usp=sharing) and below is the code if you want to train your model on different video
 # this is the code for extracting images from the the video
 import cv2
 import os
