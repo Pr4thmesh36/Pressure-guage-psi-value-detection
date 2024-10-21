@@ -27,6 +27,12 @@ These are some of the model training results
 ![labels](https://github.com/user-attachments/assets/1d10c634-54e1-431b-8be6-4f6aeb025c1b)
 ![labels_correlogram](https://github.com/user-attachments/assets/c4e1fcad-a2d6-424c-a69f-9774b671d275)
 ![train_batch0](https://github.com/user-attachments/assets/bdf5ee60-5902-4c1a-afed-a0544caec0d6)
+![image](https://github.com/user-attachments/assets/968cc783-9f49-4909-8f17-9efe4dfbdbbb)
+![image](https://github.com/user-attachments/assets/d1b291e1-733b-418b-8091-60bf2f3bf3c6)
+![image](https://github.com/user-attachments/assets/97bc8a50-919c-4c8d-a666-963b60135b70)
+
+
+
 
 
 
